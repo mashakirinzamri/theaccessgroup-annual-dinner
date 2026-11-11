@@ -1,0 +1,9 @@
+{
+  "registries": [
+    "https://mfe.workspace.access-workspace.com.au/registry/"
+  ],
+  "development": {
+    "plugins": {}
+  },
+  "$schema": "https://opencomponents.github.io/schema.json"
+}

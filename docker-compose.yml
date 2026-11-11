@@ -1,0 +1,32 @@
+# Self-hosting docker-compose for the Access Annual Dinner 2026 app.
+# See DEPLOYMENT.md for full instructions, including the required
+# NEXT_PUBLIC_API_URL value and the private-package caveat.
+#
+# Usage:
+#   NEXT_PUBLIC_API_URL=http://YOUR_SERVER_IP:5000 docker compose up -d --build
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../deploy/backend/Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - dinner_data:/app
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../deploy/frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:5000}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  dinner_data:
