@@ -41,7 +41,7 @@ export default function Home({ totalReg, totalCI, isAdmin, goto, onRequestAdmin 
         <h1>
           MTV Retro Rewind
           <br />
-          <span className="disco-glow-text">Access Annual Dinner 2026</span>
+          <span className="disco-glow-text">Access GOC KL Gala Dinner</span>
         </h1>
         <p>A night of glitter, groove and gold — celebration, recognition, lucky draws, games and connection. Get on the dance floor!</p>
         <div className="d-hero-btns">

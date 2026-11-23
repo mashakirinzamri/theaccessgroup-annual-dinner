@@ -14,8 +14,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Access Annual Dinner 2026",
-  description: "Retro disco-themed event management system for the Access Annual Dinner 2026: registration, QR check-in, live dashboard, lucky draw, best dress voting, mini game, and Wootric-powered feedback.",
+  title: "Access GOC KL Gala Dinner",
+  description: "Retro disco-themed event management system for the Access GOC KL Gala Dinner: registration, QR check-in, live dashboard, lucky draw, best dress voting, mini game, and Wootric-powered feedback.",
 };
 
 export default function RootLayout({

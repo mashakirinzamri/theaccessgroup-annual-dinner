@@ -54,6 +54,13 @@ var app = builder.Build();
 static void EnsureDonationsTable(AppDbContext db) =>
     db.Database.ExecuteSqlRaw("CREATE TABLE IF NOT EXISTS \"Donations\" (\"Id\" INTEGER NOT NULL CONSTRAINT \"PK_Donations\" PRIMARY KEY AUTOINCREMENT, \"DonorName\" TEXT NOT NULL, \"Amount\" INTEGER NOT NULL, \"DonatedAt\" TEXT NOT NULL)");
 
+// Older databases were created before vote categories (male/female) existed.
+static void EnsureVoteCategory(AppDbContext db)
+{
+    try { db.Database.ExecuteSqlRaw("ALTER TABLE \"Votes\" ADD COLUMN \"Category\" TEXT NOT NULL DEFAULT ''"); }
+    catch { /* column already exists */ }
+}
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -61,6 +68,7 @@ using (var scope = app.Services.CreateScope())
     {
         db.Database.EnsureCreated();
         EnsureDonationsTable(db);
+        EnsureVoteCategory(db);
         Seed.Run(db);
     }
     catch (Exception ex)
@@ -71,6 +79,7 @@ using (var scope = app.Services.CreateScope())
         db.Database.EnsureDeleted();
         db.Database.EnsureCreated();
         EnsureDonationsTable(db);
+        EnsureVoteCategory(db);
         Seed.Run(db);
     }
 }
@@ -94,8 +103,7 @@ api.MapGet("/attendees", async (AppDbContext db) =>
 
 api.MapPost("/attendees", async (AppDbContext db, AttendeeCreateDto dto) =>
 {
-    var count = await db.Attendees.CountAsync();
-    var ticket = $"ANN2026-{(count + 1):D5}";
+    var ticket = $"ANN2026-{(await Seed.MaxTicketAsync(db) + 1):D5}";
     var attendee = new Attendee
     {
         Ticket = ticket,
@@ -141,7 +149,7 @@ api.MapPost("/attendees/{ticket}/checkin", async (AppDbContext db, string ticket
 api.MapPost("/attendees/bulk-import", async (AppDbContext db, List<AttendeeCreateDto> rows) =>
 {
     var existingEmails = (await db.Attendees.Select(a => a.Email.ToLower()).ToListAsync()).ToHashSet();
-    var count = await db.Attendees.CountAsync();
+    var count = await Seed.MaxTicketAsync(db);
     var imported = new List<Attendee>();
     var skipped = new List<string>();
 
@@ -210,9 +218,20 @@ api.MapPost("/votes", async (AppDbContext db, VoteDto dto) =>
 {
     if (string.IsNullOrWhiteSpace(dto.CandidateName))
         return Results.BadRequest(new { message = "A name is required to cast a vote." });
-    var already = await db.Votes.AnyAsync(v => v.VoterKey == dto.VoterKey);
-    if (already) return Results.Conflict(new { message = "Already voted" });
-    var vote = new Vote { VoterKey = dto.VoterKey, CandidateName = dto.CandidateName.Trim() };
+    var category = (dto.Category ?? "").Trim();
+    if (!category.Equals("Male", StringComparison.OrdinalIgnoreCase) && !category.Equals("Female", StringComparison.OrdinalIgnoreCase))
+        return Results.BadRequest(new { message = "Choose the Male or Female best dress category." });
+    category = char.ToUpper(category[0]) + category[1..].ToLower();
+    // One vote per person per category (so 2 votes in total: 1 male, 1 female).
+    var already = await db.Votes.AnyAsync(v => v.VoterKey == dto.VoterKey && v.Category == category);
+    if (already) return Results.Conflict(new { message = "Already voted in this category" });
+    var wanted = dto.CandidateName.Trim().ToLower();
+    // Only guests who have checked in can be voted for.
+    var match = (await db.Attendees.Where(a => a.CheckedIn).Select(a => a.Name).ToListAsync())
+        .FirstOrDefault(n => n.Trim().ToLower() == wanted);
+    if (match is null)
+        return Results.BadRequest(new { message = "Name not found among checked-in guests." });
+    var vote = new Vote { VoterKey = dto.VoterKey, CandidateName = match.Trim(), Category = category };
     db.Votes.Add(vote);
     await db.SaveChangesAsync();
     return Results.Created($"/api/votes/{vote.Id}", vote);
@@ -233,9 +252,14 @@ api.MapGet("/draw-winners", async (AppDbContext db) =>
 
 api.MapPost("/draw-winners", async (AppDbContext db, DrawWinnerDto dto) =>
 {
+    var wn = (dto.Name ?? "").Trim().ToLower();
+    var person = (await db.Attendees.Where(a => a.CheckedIn).ToListAsync())
+        .FirstOrDefault(a => a.Name.Trim().ToLower() == wn);
+    if (person is null)
+        return Results.BadRequest(new { message = "Only checked-in registered attendees can win." });
     var winner = new DrawWinner
     {
-        Name = dto.Name,
+        Name = person.Name,
         Division = dto.Division,
         Prize = dto.Prize,
         PrizeCategory = dto.PrizeCategory
@@ -309,12 +333,19 @@ app.Run();
 record AttendeeCreateDto(string Name, string Email, string Mobile, string? NokName, string? NokContact, string Division, string FunctionArea, string? Dietary);
 record DonationDto(string DonorName, int Amount);
 record CheckinDto(string? Gate);
-record VoteDto(string VoterKey, string CandidateName);
+record VoteDto(string VoterKey, string CandidateName, string? Category);
 record DrawWinnerDto(string Name, string Division, string Prize, string PrizeCategory);
 record FeedbackDto(int NpsScore, int OverallRating, int FoodRating, int VenueRating, int EntertainmentRating, string? Comment);
 
 static class Seed
 {
+    static int TicketNo(string t) => int.TryParse(t.Split('-').Last(), out var n) ? n : 0;
+    public static async Task<int> MaxTicketAsync(AppDbContext db)
+    {
+        var tickets = await db.Attendees.Select(a => a.Ticket).ToListAsync();
+        return tickets.Count == 0 ? 0 : tickets.Max(TicketNo);
+    }
+
     // Loads the real attendee list from Data/attendees.csv (Name,Email) and adds anyone missing on every start.
     public static void Run(AppDbContext db)
     {
@@ -344,7 +375,8 @@ static class Seed
             seen.Add($"noemail:{g}#{noEmailCount[g]}");
         }
         var csvNoEmail = new Dictionary<string, int>();
-        var n = db.Attendees.Count();
+        var n = db.Attendees.AsEnumerable().Select(a => TicketNo(a.Ticket)).DefaultIfEmpty(0).Max();
+        var csvKeys = new HashSet<string>();
         foreach (var line in File.ReadLines(path).Skip(1))
         {
             if (string.IsNullOrWhiteSpace(line)) continue;
@@ -361,6 +393,7 @@ static class Seed
                 key = $"noemail:{nk}#{csvNoEmail[nk]}";
             }
             else key = email.ToLower();
+            csvKeys.Add(key);
             if (!seen.Add(key)) continue;
             n++;
             db.Attendees.Add(new Attendee
@@ -373,5 +406,27 @@ static class Seed
             });
         }
         db.SaveChanges();
+
+        // Keep the database in step with the file: remove imported guests who are no longer on the list
+        // and have not checked in. Checked-in guests and walk-ins are never removed.
+        var stale = new List<Attendee>();
+        var occ = new Dictionary<string, int>();
+        foreach (var a in db.Attendees.OrderBy(a => a.Id).ToList())
+        {
+            string k;
+            if (a.Email == "")
+            {
+                var nk = a.Name.ToLower();
+                occ[nk] = occ.GetValueOrDefault(nk) + 1;
+                k = $"noemail:{nk}#{occ[nk]}";
+            }
+            else k = a.Email.ToLower();
+            if (a.Source == "Imported" && !a.CheckedIn && !csvKeys.Contains(k)) stale.Add(a);
+        }
+        if (stale.Count > 0)
+        {
+            db.Attendees.RemoveRange(stale);
+            db.SaveChanges();
+        }
     }
 }

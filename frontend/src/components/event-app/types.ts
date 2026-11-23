@@ -41,6 +41,7 @@ export interface VoteRecord {
   id: number;
   voterKey: string;
   candidateName: string;
+  category: string;
   votedAt: string;
 }
 

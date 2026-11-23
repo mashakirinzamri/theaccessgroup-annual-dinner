@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "../api";
 import { DONATION_QR_TEXT, DONATION_RM_PER_ENTRY, normalize } from "../shared";
 import { useToast } from "../ToastContext";
@@ -22,6 +22,14 @@ export default function Donations({ backendUrl, attendees, donations, onChange, 
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [busy, setBusy] = useState(false);
+
+  // Keep the total counter live by refreshing every 10 seconds.
+  useEffect(() => {
+    const t = setInterval(() => {
+      api.getDonations(backendUrl).then(onChange).catch(() => {});
+    }, 10000);
+    return () => clearInterval(t);
+  }, [backendUrl, onChange]);
 
   const board = useMemo(() => {
     const m = new Map<string, { name: string; total: number }>();
@@ -88,6 +96,13 @@ export default function Donations({ backendUrl, attendees, donations, onChange, 
           onError={() => setCustomQrFailed(true)}
           style={{ width: 200, height: 200, background: "#fff", borderRadius: 12, padding: 6, display: customQrFailed && !generatedQr ? "none" : "inline-block" }}
         />
+        <div style={{ margin: "12px 0 0" }}>
+          <div style={{ fontSize: 10, letterSpacing: 1, textTransform: "uppercase", color: "var(--disco-muted)" }}>Total Donated</div>
+          <div style={{ fontSize: 32, fontWeight: 800, color: "var(--disco-gold)" }}>RM{grandTotal.toLocaleString()}</div>
+          <div style={{ fontSize: 10, color: "var(--disco-muted)" }}>
+            {donations.length} donation{donations.length === 1 ? "" : "s"} · {board.length} donor{board.length === 1 ? "" : "s"} · {donations.reduce((s, d) => s + Math.floor(d.amount / DONATION_RM_PER_ENTRY), 0)} bonus entries
+          </div>
+        </div>
         <p style={{ fontSize: 11, color: "var(--disco-muted)", margin: "10px 0 0" }}>
           Scan to donate. Every <strong style={{ color: "var(--disco-gold)" }}>RM{DONATION_RM_PER_ENTRY}</strong> = <strong style={{ color: "var(--disco-gold)" }}>1 extra Lucky Draw entry</strong>.
           After paying, record your donation below.

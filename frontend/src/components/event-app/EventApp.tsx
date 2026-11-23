@@ -139,7 +139,7 @@ function EventAppInner() {
     <div className="disco-app">
       <nav className="d-nav">
         <div className="d-nav-logo">
-          🪩 Access <span style={{ color: "var(--disco-pink)" }}>Annual Dinner 2026</span>
+          🪩 Access <span style={{ color: "var(--disco-pink)" }}>GOC KL Gala Dinner</span>
         </div>
         {PUBLIC_NAV.map((item) => (
           <button key={item.id} className={`d-nav-btn ${page === item.id ? "active" : ""}`} onClick={() => goto(item.id)}>

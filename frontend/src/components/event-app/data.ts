@@ -33,21 +33,17 @@ export interface PrizeCategory {
 }
 
 export const PRIZES: PrizeCategory[] = [
-  { tab: "Grand Prize", short: "🏆 Grand", items: [{ name: "Sony PlayStation 5", qty: 1 }] },
+  { tab: "Grand Prize", short: "🏆 Grand", items: [{ name: "Apple iPhone 17 256GB", qty: 1 }] },
   {
     tab: "Gold Prize",
     short: "🥇 Gold",
-    items: [
-      { name: '55" Crystal UHD U8000H 4K Samsung Vision AI Smart TV', qty: 1 },
-      { name: "Westin Hotel 1 Night Stay including breakfast for 2 Voucher", qty: 4 },
-    ],
+    items: [{ name: '55" Crystal UHD U8000H 4K Samsung Vision AI Smart TV (2026)', qty: 1 }],
   },
   {
     tab: "Silver Prize",
     short: "🥈 Silver",
     items: [
-      { name: "Samsung Galaxy Tab S10 Lite", qty: 2 },
-      { name: "Dreame F20 Robot Vacuum", qty: 2 },
+      { name: "Galaxy Tab S10 Lite", qty: 2 },
       { name: "Insta360 GO 3S", qty: 1 },
     ],
   },
@@ -55,9 +51,11 @@ export const PRIZES: PrizeCategory[] = [
     tab: "Bronze Prize",
     short: "🥉 Bronze",
     items: [
-      { name: "Klook Travel e-voucher RM500", qty: 4 },
-      { name: "Touch 'n Go voucher RM250", qty: 4 },
-      { name: "AEON Cash voucher RM200", qty: 8 },
+      { name: "Dreame F20 Robot Vacuum", qty: 2 },
+      { name: "Westin Hotel KL, 1 night stay incl breakfast for 2", qty: 4 },
+      { name: "Klook Travel E-voucher", qty: 4 },
+      { name: "Touch 'n Go Voucher", qty: 4 },
+      { name: "AEON Cash Voucher", qty: 8 },
     ],
   },
 ];

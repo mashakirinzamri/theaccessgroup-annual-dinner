@@ -35,6 +35,7 @@ public class Vote
     public int Id { get; set; }
     public string VoterKey { get; set; } = "";
     public string CandidateName { get; set; } = "";
+    public string Category { get; set; } = ""; // Male | Female
     public DateTime VotedAt { get; set; } = DateTime.UtcNow;
 }
 

@@ -90,7 +90,7 @@ export default function Feedback({ backendUrl, onSubmitted }: FeedbackProps) {
         <div className="d-wootric-badge">🔗 Powered by Wootric NPS</div>
         <h2 style={{ color: "#fff", fontSize: 18, marginBottom: 4 }}>How likely are you to recommend this event?</h2>
         <p style={{ color: "var(--disco-muted)", fontSize: 11, marginBottom: 4 }}>
-          SoftCo Annual Dinner 2026 · A Wootric micro-survey to capture your Net Promoter Score
+          Access GOC KL Gala Dinner · A Wootric micro-survey to capture your Net Promoter Score
         </p>
         {loading && <p style={{ color: "var(--disco-muted)", fontSize: 11 }}>Loading survey…</p>}
 

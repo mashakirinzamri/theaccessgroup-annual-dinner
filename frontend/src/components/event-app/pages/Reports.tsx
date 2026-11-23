@@ -104,14 +104,14 @@ export default function Reports({ backendUrl, attendees, winners, votes, feedbac
   const noShows = attendees.filter((a) => !a.checkedIn);
 
   const sortedCandidates = useMemo(() => {
-    const counts = new Map<string, { display: string; v: number }>();
+    const counts = new Map<string, { display: string; cat: string; v: number }>();
     votes.forEach((v) => {
-      const key = normalize(v.candidateName);
+      const key = `${v.category}|${normalize(v.candidateName)}`;
       const existing = counts.get(key);
       if (existing) existing.v++;
-      else counts.set(key, { display: titleCase(v.candidateName), v: 1 });
+      else counts.set(key, { display: titleCase(v.candidateName), cat: v.category || "—", v: 1 });
     });
-    return Array.from(counts.values()).sort((a, b) => b.v - a.v);
+    return Array.from(counts.values()).sort((a, b) => a.cat.localeCompare(b.cat) || b.v - a.v);
   }, [votes]);
   const voteTotal = votes.length;
 
@@ -119,7 +119,7 @@ export default function Reports({ backendUrl, attendees, winners, votes, feedbac
     <div className="d-container">
       <div style={{ marginBottom: 12 }}>
         <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", marginBottom: 2 }}>📋 Reports & Analytics</div>
-        <div style={{ fontSize: 10, color: "var(--disco-muted)" }}>Annual Dinner 2026 · Live data from SQLite</div>
+        <div style={{ fontSize: 10, color: "var(--disco-muted)" }}>Access GOC KL Gala Dinner · Live data from SQLite</div>
       </div>
       <div className="d-rep-tabs">
         {TABS.map((t) => (
@@ -356,7 +356,8 @@ export default function Reports({ backendUrl, attendees, winners, votes, feedbac
             <table className="d-rep-table">
               <thead>
                 <tr>
-                  <th>Rank</th>
+                  <th>#</th>
+                  <th>Category</th>
                   <th>Name</th>
                   <th>Votes</th>
                   <th>%</th>
@@ -365,14 +366,15 @@ export default function Reports({ backendUrl, attendees, winners, votes, feedbac
               <tbody>
                 {sortedCandidates.length === 0 && (
                   <tr>
-                    <td colSpan={4} style={{ textAlign: "center", color: "var(--disco-muted)", padding: 16 }}>
+                    <td colSpan={5} style={{ textAlign: "center", color: "var(--disco-muted)", padding: 16 }}>
                       No votes cast yet.
                     </td>
                   </tr>
                 )}
                 {sortedCandidates.map((c, rank) => (
-                  <tr key={c.display}>
-                    <td>{rank < 3 ? ["🥇", "🥈", "🥉"][rank] : rank + 1}</td>
+                  <tr key={`${c.cat}-${c.display}`}>
+                    <td>{rank + 1}</td>
+                    <td>{c.cat}</td>
                     <td>
                       <strong>{c.display}</strong>
                     </td>

@@ -60,7 +60,7 @@ export default function ComparePage() {
   return (
     <main className="mx-auto min-h-screen max-w-5xl px-5 py-10 text-neutral-900">
       <a href="/" className="text-sm text-teal-700 underline">
-        ← Back to the Annual Dinner app
+        ← Back to the Gala Dinner app
       </a>
 
       <h1 className="mt-4 text-2xl font-extrabold">Before vs. After — Why the Error Box Showed Up</h1>

@@ -69,10 +69,10 @@ export const api = {
     ),
   getScanLogs: (backendUrl: string) => req<ScanLogEntry[]>(backendUrl, "/api/scanlogs"),
   getVotes: (backendUrl: string) => req<VoteRecord[]>(backendUrl, "/api/votes"),
-  castVote: (backendUrl: string, voterKey: string, candidateName: string) =>
+  castVote: (backendUrl: string, voterKey: string, candidateName: string, category: string) =>
     req<VoteRecord>(backendUrl, "/api/votes", {
       method: "POST",
-      body: JSON.stringify({ voterKey, candidateName }),
+      body: JSON.stringify({ voterKey, candidateName, category }),
     }),
   getDrawWinners: (backendUrl: string) => req<DrawWinnerRecord[]>(backendUrl, "/api/draw-winners"),
   addDrawWinner: (backendUrl: string, name: string, division: string, prize: string, prizeCategory: string) =>
