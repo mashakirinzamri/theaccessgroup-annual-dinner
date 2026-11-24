@@ -44,7 +44,7 @@ export default function Draw({ backendUrl, attendees, winners, donations, onDona
     () => attendees.filter((a) => a.checkedIn && !usedNames.has(normalize(a.name))).map((a) => ({ n: a.name, div: a.division })),
     [attendees, usedNames],
   );
-  // Each person gets 1 base entry + 1 extra entry per RM10 donated. Entries are interleaved so
+  // Each person gets 1 base entry + 1 extra entry per RM20 donated. Entries are interleaved so
   // repeated names are spread around the wheel instead of sitting in one block.
   const entries = useMemo(() => {
     const extra = new Map<string, number>();

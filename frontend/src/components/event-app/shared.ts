@@ -166,7 +166,7 @@ export function checkinUrl(ticket?: string): string {
   return url.toString();
 }
 
-/** RM10 donated = 1 extra lucky draw entry. */
-export const DONATION_RM_PER_ENTRY = 10;
+/** RM20 donated = 1 extra lucky draw entry. */
+export const DONATION_RM_PER_ENTRY = 20;
 /** Link encoded in the donation QR (Give.Asia campaign). If public/donation-qr.png exists, that image is shown instead. */
 export const DONATION_QR_TEXT = "https://give.asia/campaign/empowering-workforces-while-supporting-children#/donations";

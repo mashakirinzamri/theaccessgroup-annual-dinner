@@ -131,7 +131,7 @@ export default function Donations({ backendUrl, attendees, donations, onChange, 
           </div>
         </div>
         <div style={{ fontSize: 11, color: "var(--disco-muted)", marginBottom: 10 }}>
-          {newEntries > 0 ? `🎟️ RM${amt} = ${newEntries} extra ${newEntries === 1 ? "entry" : "entries"}` : "Enter RM10 or more to earn extra entries."} · Your name is required, anonymous isn&apos;t allowed.
+          {newEntries > 0 ? `🎟️ RM${amt} = ${newEntries} extra ${newEntries === 1 ? "entry" : "entries"}` : "Enter RM20 or more to earn extra entries."} · Your name is required, anonymous isn&apos;t allowed.
         </div>
         <button className="d-btn-primary" style={{ width: "100%" }} disabled={busy} onClick={submit}>
           {busy ? "Saving…" : "💝 I've Donated"}
