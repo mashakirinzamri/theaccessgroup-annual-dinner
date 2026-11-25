@@ -37,7 +37,7 @@ export default function Home({ totalReg, totalCI, isAdmin, goto, onRequestAdmin 
   return (
     <div>
       <div className="d-hero">
-        <div className="d-hero-badge">🪩 15 August 2026 &nbsp;|&nbsp; 🏨 Grand Ballroom, KL &nbsp;|&nbsp; 🕖 7:00 PM</div>
+        <div className="d-hero-badge">🪩 26 November 2026 &nbsp;|&nbsp; 🏨 Mandarin Oriental, KL &nbsp;|&nbsp; 🕖 5:45 PM</div>
         <h1>
           MTV Retro Rewind
           <br />

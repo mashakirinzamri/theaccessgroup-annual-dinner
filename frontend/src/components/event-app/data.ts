@@ -2,12 +2,12 @@
 // All core features — attendees, check-ins, votes, draw winners, feedback — are 100% real data from the SQLite backend.
 
 export const HOURLY = [
-  { l: "<7PM", v: 12 },
-  { l: "7-7:30", v: 98 },
-  { l: "7:30-8", v: 112 },
-  { l: "8-8:30", v: 52 },
-  { l: "8:30-9", v: 15 },
-  { l: ">9PM", v: 0 },
+  { l: "<5:45", v: 12 },
+  { l: "5:45-6:15", v: 98 },
+  { l: "6:15-6:45", v: 112 },
+  { l: "6:45-7:15", v: 52 },
+  { l: "7:15-7:45", v: 15 },
+  { l: ">7:45", v: 0 },
 ];
 
 export const LIVE_NAMES = [

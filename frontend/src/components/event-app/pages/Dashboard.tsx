@@ -63,7 +63,7 @@ export default function Dashboard({ attendees, onSimulateCheckin }: DashboardPro
         <div>
           <div style={{ fontSize: 17, fontWeight: 700, color: "#fff" }}>📊 Live Event Console</div>
           <div style={{ fontSize: 10, color: "var(--disco-muted)" }}>
-            Access GOC KL Gala Dinner &nbsp;|&nbsp; Grand Ballroom, KL &nbsp;|&nbsp;{" "}
+            Access GOC KL Gala Dinner &nbsp;|&nbsp; Mandarin Oriental, KL &nbsp;|&nbsp;{" "}
             <span style={{ color: "var(--disco-green)" }}>● Live</span> &nbsp;|&nbsp; Refresh: {refreshTick}s
           </div>
         </div>
@@ -132,7 +132,7 @@ export default function Dashboard({ attendees, onSimulateCheckin }: DashboardPro
             ))}
           </div>
           <div style={{ fontSize: 9, color: "var(--disco-muted)", marginTop: 8 }}>
-            Peak: <strong style={{ color: "#fff" }}>7:30–8:00 PM (112 check-ins)</strong>
+            Peak: <strong style={{ color: "#fff" }}>6:15–6:45 PM (112 check-ins)</strong>
           </div>
         </div>
         <div className="d-dash-panel">
