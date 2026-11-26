@@ -14,6 +14,7 @@ interface ReportsProps {
   feedback: FeedbackRecord[];
   onImported: () => void;
   onVotesReset: () => void;
+  onDrawReset: () => void;
 }
 
 type TabId = "att" | "ns" | "draw" | "vote" | "fb";
@@ -26,7 +27,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "fb", label: "⭐ Feedback" },
 ];
 
-export default function Reports({ backendUrl, attendees, winners, votes, feedback, onImported, onVotesReset }: ReportsProps) {
+export default function Reports({ backendUrl, attendees, winners, votes, feedback, onImported, onVotesReset, onDrawReset }: ReportsProps) {
   const { toast } = useToast();
   const [tab, setTab] = useState<TabId>("att");
   const [importing, setImporting] = useState(false);
@@ -38,6 +39,17 @@ export default function Reports({ backendUrl, attendees, winners, votes, feedbac
       const r = await api.resetCheckins(backendUrl);
       onImported();
       toast(`✅ Reset ${r.reset} check-in${r.reset === 1 ? "" : "s"}.`, "success");
+    } catch {
+      toast("⚠️ Reset failed — could not reach the backend.", "error");
+    }
+  }
+
+  async function handleResetDraw() {
+    if (!window.confirm("Reset the Lucky Draw? All winners will be cleared and everyone becomes eligible again. This cannot be undone.")) return;
+    try {
+      const r = await api.resetDraw(backendUrl);
+      onDrawReset();
+      toast(`✅ Cleared ${r.reset} winner${r.reset === 1 ? "" : "s"}.`, "success");
     } catch {
       toast("⚠️ Reset failed — could not reach the backend.", "error");
     }
@@ -168,6 +180,9 @@ export default function Reports({ backendUrl, attendees, winners, votes, feedbac
               </button>
               <button className="d-btn-secondary" onClick={handleReset}>
                 🔄 Reset Check-Ins
+              </button>
+              <button className="d-btn-secondary" onClick={handleResetDraw}>
+                🏆 Reset Lucky Draw
               </button>
               <button className="d-btn-secondary" onClick={handleResetVotes}>
                 👗 Reset Best Dress Votes

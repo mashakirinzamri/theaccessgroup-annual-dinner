@@ -47,6 +47,8 @@ export const api = {
     }),
   resetCheckins: (backendUrl: string) =>
     req<{ reset: number }>(backendUrl, "/api/admin/reset-checkins", { method: "POST" }),
+  resetDraw: (backendUrl: string) =>
+    req<{ reset: number }>(backendUrl, "/api/admin/reset-draw", { method: "POST" }),
   resetVotes: (backendUrl: string) =>
     req<{ reset: number }>(backendUrl, "/api/admin/reset-votes", { method: "POST" }),
   bulkImportAttendees: (

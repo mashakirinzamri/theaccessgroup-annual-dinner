@@ -212,7 +212,7 @@ function EventAppInner() {
       </div>
       <div className={`d-page ${page === "reports" ? "active" : ""}`}>
         {isAdmin ? (
-          <Reports backendUrl={backendUrl} attendees={attendees} winners={winners} votes={votes} feedback={feedback} onImported={refreshAttendees} onVotesReset={() => { setVotes([]); setVoteResetToken((t) => t + 1); }} />
+          <Reports backendUrl={backendUrl} attendees={attendees} winners={winners} votes={votes} feedback={feedback} onImported={refreshAttendees} onDrawReset={() => setWinners([])} onVotesReset={() => { setVotes([]); setVoteResetToken((t) => t + 1); }} />
         ) : (
           <AdminRequired onLogin={requestAdmin} />
         )}
